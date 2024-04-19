@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iPhone Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .calculator {
+            background-color: #000;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            max-width: 300px;
+            width: 100%;
+        }
+
+        .display {
+            background-color: #1c1c1c;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: right;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+        }
+
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 24px;
+            padding: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #666;
+        }
+
+        .selected {
+            background-color: #fff;
+            color: #f69906;
+        }
+
+        .operator {
+            background-color: #f69906;
+            color: #fff;
+        }
+
+        .operator:hover {
+            background-color: #ffc107;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <div class="display">0</div>
+        <div class="buttons">
+            <button class="operator" data-action="clear">AC</button>
+            <button class="operator" data-action="negate">+/-</button>
+            <button class="operator" data-action="percentage">%</button>
+            <button class="operator" data-action="/">/</button>
+            <button class="number" data-number="7">7</button>
+            <button class="number" data-number="8">8</button>
+            <button class="number" data-number="9">9</button>
+            <button class="operator" data-action="*">*</button>
+            <button class="number" data-number="4">4</button>
+            <button class="number" data-number="5">5</button>
+            <button class="number" data-number="6">6</button>
+            <button class="operator" data-action="-">-</button>
+            <button class="number" data-number="1">1</button>
+            <button class="number" data-number="2">2</button>
+            <button class="number" data-number="3">3</button>
+            <button class="operator" data-action="+">+</button>
+            <button class="number" data-number="0">0</button>
+            <button class="dot" data-number=".">.</button>
+            <button class="operator" data-action="calculate">=</button>
+        </div>
+    </div>
+
+    <script>
+        let value = 0;
+        let operator = "";
+        let firstValue = 0;
+        let secondValue = 0;
+
+        let display = document.querySelector(".display");
+        let numbers = Array.from(document.querySelectorAll(".number")).sort(
+            (a, b) => a.dataset.number - b.dataset.number
+        );
+        let operators = document.querySelectorAll(".operator");
+
+        function updateDisplay() {
+            if (value === "") {
+                value = 0;
+            }
+            display.textContent = value;
+
+        }
+
+        function assignValue() {
+            if (value !== "") {
+                firstValue = parseFloat(value);
+                value = "";
+            }
+        }
+
+        numbers.forEach((number) => {
+            number.addEventListener("click", () => {
+                if (value === 0) {
+                    value = number.dataset.number;
+                } else {
+                    value += number.dataset.number;
+                }
+                updateDisplay();
+            });
+        });
+
+        operators.forEach((op) => {
+            op.addEventListener("click", () => {
+                if (op.dataset.action === "clear") {
+                    value = 0;
+                    firstValue = 0;
+                    secondValue = 0;
+                    operator = "";
+                } else if (op.dataset.action === "negate") {
+                    value = -value;
+                } else if (op.dataset.action === "percentage") {
+                    value /= 100;
+                } else if (op.dataset.action === "calculate") {
+                    if (value !== '') {
+                        secondValue = parseFloat(value);
+                    }
+                    if (secondValue !== 0 && operator !== "") {
+
+                        console.log(firstValue, secondValue, operator)
+                        if (operator === "+") {
+                            value = firstValue + secondValue;
+                        } else if (operator === "-") {
+                            value = firstValue - secondValue;
+                        } else if (operator === "*") {
+                            value = firstValue * secondValue;
+                        } else if (operator === "/") {
+                            value = firstValue / secondValue;
+                        }
+
+                        assignValue();
+                        value = firstValue
+                        updateDisplay();
+                        secondValue = 0;
+                        operator = "";
+                        return
+                    }
+                } else {
+                    operator = op.dataset.action;
+                    assignValue();
+                }
+                updateDisplay();
+            });
+        });
+    </script>
+</body>
+
+</html>
